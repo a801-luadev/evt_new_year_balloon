@@ -651,7 +651,7 @@ local placeTokens = function()
 		placeTokenByLevel(table_random(petsByChances), inversedLevelNumber, maximumY,
 			minimumY - 100, c)
 	end
-	placeTokenByLevel("coin", 2, 4800, 4100, 5)
+	placeTokenByLevel("coin", 2, 4800, 4100, totalCheckpoints + 1)
 end
 
 local placeStaticDragons = function(total)
@@ -910,7 +910,7 @@ eventPlayerDataLoaded = function(playerName, data)
 	system.bindKeyboard(playerName, 3, true, true)
 
 	local cache = playerCache[playerName]
-	placeTokenImagesForPlayerLevel(playerName, cache, 5)
+	placeTokenImagesForPlayerLevel(playerName, cache, #checkpoints + 1)
 
 	cache.collectedCoins = playerData:get(playerName, "totalCoins")
 	if playerData:get(playerName, "finishedEvent") then
