@@ -587,14 +587,16 @@ local updateCollectedCoins = function(playerName)
 		nil, 1, 1, 0, true)
 end
 
-local placeTokenImagesForPlayer = function(playerName, cache)
+local placeTokenImagesForPlayerLevel = function(playerName, cache, level)
 	local tk = cache.tokens
 	for k, v in next, tokens do
-		tk[k] = tfm.exec.addImage(v.image, "!0", v.x, v.y, playerName)
+		if v.level == level then
+			tk[k] = tfm.exec.addImage(v.image, "!0", v.x, v.y, playerName)
+		end
 	end
 end
 
-local placeCheckpoint = function(y)
+local placeCheckpoint = function(y, level)
 	local id
 	for t = 0, 800, 20 do
 		id = -(y + t)
@@ -604,7 +606,8 @@ local placeCheckpoint = function(y)
 			type = tokenTypes.checkpoint,
 			image = images.tokens.checkpoint,
 			x = t - 15,
-			y = y - 15
+			y = y - 15,
+			level = level
 		}
 	end
 
@@ -614,7 +617,7 @@ local placeCheckpoint = function(y)
 	tfm.exec.addImage(images.cloud, "!0", 400, y, nil, nil, nil, nil, nil, 0.5, 0.6)
 end
 
-local placeTokenByLevel = function(tokenType, total, maximumY, minimumY)
+local placeTokenByLevel = function(tokenType, total, maximumY, minimumY, level)
 	local idBase = minimumY
 	maximumY, minimumY = maximumY / 1000, minimumY / 1000
 
@@ -629,7 +632,8 @@ local placeTokenByLevel = function(tokenType, total, maximumY, minimumY)
 			type = tokenTypes[tokenType],
 			image = images.tokens[tokenType],
 			x = x - 15,
-			y = y - 15
+			y = y - 15,
+			level = level
 		}
 	end
 end
@@ -642,12 +646,12 @@ local placeTokens = function()
 		inversedLevelNumber = (totalCheckpoints - c + 1)
 		maximumY, minimumY = checkpoints[c] - 100, checkpoints[c] - 900
 
-		placeCheckpoint(checkpoints[c])
-		placeTokenByLevel("coin", inversedLevelNumber * 2, maximumY, minimumY)
+		placeCheckpoint(checkpoints[c], c + 1)
+		placeTokenByLevel("coin", inversedLevelNumber * 2, maximumY, minimumY, c)
 		placeTokenByLevel(table_random(petsByChances), inversedLevelNumber, maximumY,
-			minimumY - 100)
+			minimumY - 100, c)
 	end
-	placeTokenByLevel("coin", 2, 4800, 4100)
+	placeTokenByLevel("coin", 2, 4800, 4100, 5)
 end
 
 local placeStaticDragons = function(total)
@@ -906,7 +910,7 @@ eventPlayerDataLoaded = function(playerName, data)
 	system.bindKeyboard(playerName, 3, true, true)
 
 	local cache = playerCache[playerName]
-	placeTokenImagesForPlayer(playerName, cache)
+	placeTokenImagesForPlayerLevel(playerName, cache, 5)
 
 	cache.collectedCoins = playerData:get(playerName, "totalCoins")
 	if playerData:get(playerName, "finishedEvent") then
@@ -943,6 +947,7 @@ eventPlayerBonusGrabbed = function(playerName, id)
 		id = math_floor(-id / 1000)
 		if id < cache.currentLevel then
 			cache.currentLevel = id
+			placeTokenImagesForPlayerLevel(playerName, cache, id)
 		end
 	elseif token.type == tokenTypes.coin then
 		cache.collectedCoins = cache.collectedCoins + 1
@@ -977,8 +982,6 @@ local eventRoundEnded = function()
 	for playerName in next, playerCache do
 		eventPlayerLeft(playerName)
 	end
-
-	system.exit()
 end
 
 eventLoop = function(currentTime, remainingTime)
