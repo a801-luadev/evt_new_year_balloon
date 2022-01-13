@@ -511,7 +511,7 @@ local tokenTypes = {
 	checkpoint = 0,
 	coin = 1,
 	dragonPet = 2,
-	tigerPet = 2
+	tigerPet = 3
 }
 
 local dragonShooterState = {
