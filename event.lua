@@ -434,6 +434,16 @@ local math_random_float = function(n, m)
 	return n + math_random() * (m - n);
 end
 
+local inRectangle = function(x, y, rx, ry, rw, rh)
+	rw, rh = rw / 2, rh / 2
+
+	return (
+		(x >= (rx - rw) and x <= (rx + rw))
+		and
+		(y >= (ry - rh) and y <= (ry + rh))
+	)
+end
+
 local displayLabelWithBorder = function(id, format, value, playerName, x, y, ...)
 	local blackValue = format .. "<font color='#000000'>" .. value
 
@@ -655,12 +665,26 @@ local placeTokens = function()
 end
 
 local placeStaticDragons = function(total)
-	local id, x, y
+	local id, x, y, canBreak
 	for d = 1, total do
 		id = -(100 + d)
 
-		x, y = math_random_float(100 / 1000, 700 / 1000) * 1000,
-			math_random_float(400 / 1000, 4500 / 1000) * 1000
+		repeat
+			x, y = math_random_float(100 / 1000, 700 / 1000) * 1000,
+				math_random_float(400 / 1000, 4500 / 1000) * 1000
+
+			canBreak = true
+			for i = 1, #checkpoints do
+				if inRectangle(x, y, 400, checkpoints[i] - 40, 100, 100) then
+					canBreak = false
+					break
+				end
+			end
+
+			if canBreak then
+				break
+			end
+		until false
 
 		tfm.exec.addPhysicObject(id, x, y, grounds.staticDragon)
 		tfm.exec.addImage(images.traps.staticDragon, "+" .. id, nil, nil, nil, nil, nil, nil, nil,
@@ -694,14 +718,28 @@ local dragonShoot = function(dragon)
 end
 
 local placeShooterDragons = function(total)
-	local id, x, y, isFacingRight, dragon
+	local id, x, y, isFacingRight, dragon, canBreak
 	for d = 1, total * 2, 2 do
 		id = -(300 + d)
 
 		isFacingRight = math_random(1, 2) == 1
 		x = isFacingRight and 25 or 785
 
-		y = math_random_float(400 / 1000, 4000 / 1000) * 1000
+		repeat
+			y = math_random_float(400 / 1000, 4000 / 1000) * 1000
+
+			canBreak = true
+			for i = 1, #checkpoints do
+				if y >= checkpoints[i]-120 and y <= checkpoints[i] then
+					canBreak = false
+					break
+				end
+			end
+
+			if canBreak then
+				break
+			end
+		until false
 
 		dragon = {
 			id = id,
