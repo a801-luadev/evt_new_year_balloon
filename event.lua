@@ -675,7 +675,7 @@ local placeStaticDragons = function(total)
 
 			canBreak = true
 			for i = 1, #checkpoints do
-				if inRectangle(x, y, 400, checkpoints[i] - 40, 100, 100) then
+				if inRectangle(x, y, 400, checkpoints[i] - 70, 120, 130) then
 					canBreak = false
 					break
 				end
@@ -1023,7 +1023,7 @@ local eventRoundEnded = function()
 end
 
 eventLoop = function(currentTime, remainingTime)
-	if (remainingTime < 500 and currentTime > 5000) or triggerRoundEnd then
+	if (remainingTime < 1000 and currentTime > 5000) or triggerRoundEnd then
 		if not hasTriggeredRoundEnd then
 			return eventRoundEnded()
 		end
