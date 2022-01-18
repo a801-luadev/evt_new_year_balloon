@@ -4,3 +4,4 @@
 → Wiki: https://transformice.fandom.com/wiki/Blooming_B%27loons
 
 ## Media
+<p align='center'>https://youtu.be/E9NDNvdXd1A<br><a href='https://youtu.be/E9NDNvdXd1A'><img src='https://img.youtube.com/vi/E9NDNvdXd1A/hqdefault.jpg' /></a></p>
