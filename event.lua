@@ -1082,3 +1082,5 @@ timer:start(function(timer)
 end, 2000, 0)
 
 tfm.exec.newGame(module.map.xml)
+
+system.luaEventLaunchInterval(45, 15)
